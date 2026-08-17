@@ -325,7 +325,7 @@ method_configs["splatad"] = TrainerConfig(
     max_num_iterations=30001,
     mixed_precision=False,
     pipeline=SplatADPipelineConfig(
-        calc_fid_steps=(30000,),
+        calc_fid_steps=(),
         datamanager=FullImageLidarDatamanagerConfig(
             dataparser=PandaSetDataParserConfig(add_missing_points=True),
             cache_images_type="uint8",

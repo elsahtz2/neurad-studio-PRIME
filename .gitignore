@@ -194,3 +194,5 @@ camera_paths/
 */**/._.DS_Store
 masks/
 *.sif
+.ipynb_checkpoints/
+pyproject.toml.bak

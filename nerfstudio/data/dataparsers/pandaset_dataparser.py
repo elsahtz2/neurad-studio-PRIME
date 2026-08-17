@@ -340,7 +340,7 @@ class PandaSet(ADDataParser):
             yaw = curr_cuboids["yaw"].astype(np.float32)
             rot = _yaw_to_rotation_matrix(yaw)
 
-            stationary = np.array(curr_cuboids["stationary"], dtype=np.bool8)  # True for static objects
+            stationary = np.array(curr_cuboids["stationary"], dtype=np.bool_)  # True for static objects
             pos_x = curr_cuboids["position.x"].astype(np.float32)  # x position of cuboid in world coords
             pos_y = curr_cuboids["position.y"].astype(np.float32)  # y position of cuboid in world coords
             pos_z = curr_cuboids["position.z"].astype(np.float32)  # z position of cuboid in world coords

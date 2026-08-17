@@ -33,10 +33,10 @@ from nerfstudio.cameras import camera_utils
 from nerfstudio.cameras.rays import RayBundle
 from nerfstudio.data.scene_box import SceneBox
 from nerfstudio.data.utils.lidar_elevation_mappings import (
-    PANDAR64_ELEVATION_MAPPING,
     VELODYNE_128_ELEVATION_MAPPING,
     VELODYNE_HDL32E_ELEVATION_MAPPING,
     VELODYNE_VLP32C_ELEVATION_MAPPING,
+    CH128X1_ELEVATION_MAPPING,
 )
 from nerfstudio.utils.misc import strtobool, torch_compile
 from nerfstudio.utils.tensor_dataclass import TensorDataclass
@@ -55,7 +55,9 @@ class LidarType(Enum):
     VELODYNE_VLP32C = auto()
     VELODYNE64E = auto()
     VELODYNE128 = auto()
+    CH128X1 = auto()
     PANDAR64 = auto()
+    OUSTER64 = auto()
     WOD64 = auto()
 
 
@@ -65,7 +67,9 @@ LIDAR_MODEL_TO_TYPE = {
     "VELODYNE_VLP32C": LidarType.VELODYNE_VLP32C,
     "VELODYNE64E": LidarType.VELODYNE64E,
     "VELODYNE128": LidarType.VELODYNE128,
+    "CH128X1": LidarType.CH128X1,
     "PANDAR64": LidarType.PANDAR64,
+    "OUSTER64": LidarType.OUSTER64,
     "WOD64": LidarType.WOD64,
 }
 
@@ -590,7 +594,7 @@ def intensity_to_rgb(intensities: np.ndarray) -> np.ndarray:  # N -> N x 3
 
 def get_lidar_elevation_mapping(lidar_type: LidarType) -> dict:
     if lidar_type == LidarType.VELODYNE16:
-        raise NotImplementedError("No elevation mapping for Velodyne 16")
+        return {i: float(a) for i, a in enumerate([-15.0,-13.0,-11.0,-9.0,-7.0,-5.0,-3.0,-1.0,1.0,3.0,5.0,7.0,9.0,11.0,13.0,15.0])}
     elif lidar_type == LidarType.VELODYNE_HDL32E:
         return VELODYNE_HDL32E_ELEVATION_MAPPING
     elif lidar_type == LidarType.VELODYNE_VLP32C:
@@ -601,6 +605,12 @@ def get_lidar_elevation_mapping(lidar_type: LidarType) -> dict:
         return VELODYNE_128_ELEVATION_MAPPING
     elif lidar_type == LidarType.PANDAR64:
         return PANDAR64_ELEVATION_MAPPING
+    elif lidar_type == LidarType.CH128X1:              
+        return CH128X1_ELEVATION_MAPPING 
+    elif lidar_type == LidarType.OUSTER64:
+        import numpy as np
+        angles = np.linspace(-22.5, 22.5, 64)
+        return {i: float(a) for i, a in enumerate(angles)}
     else:
         raise ValueError(f"Invalid lidar type: {lidar_type}")
 
@@ -618,6 +628,10 @@ def get_lidar_azimuth_resolution(lidar_type: LidarType) -> float:
         return 0.2
     elif lidar_type == LidarType.PANDAR64:
         return 0.2
+    elif lidar_type == LidarType.CH128X1:               
+        return 0.2 
+    elif lidar_type == LidarType.OUSTER64:
+        return 360.0 / 2048
     else:
         raise ValueError(f"Invalid lidar type: {lidar_type}")
 
@@ -634,6 +648,10 @@ def get_lidar_relovution_time(lidar_type: LidarType) -> float:
     elif lidar_type == LidarType.VELODYNE128:
         return 0.1
     elif lidar_type == LidarType.PANDAR64:
+        return 0.1
+    elif lidar_type == LidarType.OUSTER64:
+        return 0.1
+    elif lidar_type == LidarType.CH128X1:             
         return 0.1
     else:
         raise ValueError(f"Invalid lidar type: {lidar_type}")

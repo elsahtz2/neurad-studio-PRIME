@@ -105,6 +105,11 @@ class ADDataParserConfig(DataParserConfig):
     """Channels to skip when adding missing points."""
     lidar_azimuth_resolution: Optional[Dict[str, float]] = None
     """Azimuth resolution for each lidar."""
+    restrict_azimuth_to_observed_range: Tuple[str, ...] = tuple()
+    """Noms des lidars pour lesquels add_missing_points doit se limiter à la plage
+    d'azimuts effectivement observée dans les données (FOV restreint, ex. lidar
+    solid-state), plutôt que de supposer une couverture 360° complète."""
+    
 
     def __post_init__(self):
         if type(self) == ADDataParserConfig:
@@ -521,12 +526,18 @@ class ADDataParser(DataParser):
 
             # find missing azimuths, we should have 360 / lidar_azimuth_resolution azimuths
             num_expected_azimuths = int(360 / self.config.lidar_azimuth_resolution[lidar_name]) + 1
-            expected_idx = torch.arange(num_expected_azimuths, device=curr_azimuth.device)
             # find offset
             offset = curr_azimuth[0] % self.config.lidar_azimuth_resolution[lidar_name]
             current_idx = (
                 ((curr_azimuth - offset + 180) / self.config.lidar_azimuth_resolution[lidar_name]).round().int()
             )
+            if lidar_name in self.config.restrict_azimuth_to_observed_range:
+                # FOV restreint (ex. lidar solid-state) : ne considérer comme "manquants"
+                # que les azimuts dans la plage réellement balayée par le capteur, pas
+                # sur tout le cercle -- sinon on invente des points hors du FOV physique.
+                expected_idx = torch.arange(current_idx.min(), current_idx.max() + 1, device=curr_azimuth.device)
+            else:
+                expected_idx = torch.arange(num_expected_azimuths, device=curr_azimuth.device)
             missing_idx = expected_idx[torch.isin(expected_idx, current_idx, invert=True)]
             # interpolate missing azimuths
             missing_azimuth = (

@@ -35,7 +35,7 @@ dependencies = [
     "msgpack_numpy>=0.4.8",
     "nerfacc==0.5.2",
     "open3d>=0.16.0",
-    "opencv-python==4.10.0.84",
+    "opencv-python>=4.8.0",
     "Pillow>=10.3.0",
     "plotly>=5.7.0",
     "protobuf<=3.20.3,!=3.20.0",
@@ -52,28 +52,28 @@ dependencies = [
     "requests",
     "rich>=12.5.1",
     "scikit-image>=0.19.3",
-    "splines==0.3.0",
+    "splines>=0.3.0",
     "tensorboard>=2.13.0",
     "torch>=1.13.1",
     "torchvision>=0.14.1",
     # Added to README for later installation
     "torchmetrics[image]>=1.0.1",
     "typing_extensions>=4.4.0",
-    "viser@git+https://github.com/atonderski/viser.git",
+# PATCHED: viser from pypi instead
     "nuscenes-devkit>=1.1.1",
     "wandb>=0.13.3",
     "xatlas",
     "trimesh>=3.20.2",
-    "timm==0.6.7",
-    "gsplat@git+https://github.com/carlinds/splatad.git",
+    "timm>=0.9.0",
+# PATCHED: gsplat from pypi instead
     "pytorch-msssim",
     "pathos",
     "packaging",
     "zod>=0.1.7",
-    "pandaset@git+https://github.com/scaleapi/pandaset-devkit.git#egg=pandaset&subdirectory=python",
+# PATCHED: pandaset skipped
     "av2==0.2.1",
     "fastapi[all]==0.110",
-    "numba==0.57",
+    "numba>=0.59",
 ]
 
 [project.optional-dependencies]
@@ -192,3 +192,8 @@ ignore = [
 combine-as-imports = true
 known-first-party = ["nerfstudio"]
 split-on-trailing-comma = false
+
+[project.entry-points."nerfstudio.dataparser_configs"]
+sncf-data = "nerfstudio.data.dataparsers.sncf_dataparser:SNCFDataParserConfig"
+prime-data = "nerfstudio.data.dataparsers.prime_dataparser:PRIMEDataParserConfig"
+rellis-data = "nerfstudio.data.dataparsers.rellis_dataparser:RellisDataParserConfig"
