@@ -63,4 +63,6 @@ General nerfstudio documentation lives in the upstream repository.
 Upstream code is licensed under Apache License 2.0. The modifications listed above
 were made by the author. Original licence and notice files are retained unchanged.
 
-Work carried out during Elsa Heitz Master's thesis internship at SNCF, February to August 2026.
+This work is part of the Master's Thesis "Towards Real2Sim for Railway: LiDAR-Camera Neural Rendering for Vegetation-Dominant Scenes",
+conducted by Elsa Heitz during an internship at SNCF, February to August 2026. 
+Supervised by: Louis-Romain Joly and Laurent Gardès.
